@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每日燃油附加费率表</title>
+<style>
+  :root {
+    --bg: #f5f7fa; --card: #ffffff; --ink: #1f2d3d; --muted: #6b7785;
+    --line: #e3e8ef; --brand: #1f4e78; --brand2: #2e6da4;
+    --accent: #fff4e6; --accent-ink: #b45309;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Microsoft YaHei", Roboto, Helvetica, Arial, sans-serif;
+    padding: 24px;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; }
+  header h1 { margin: 0 0 4px; font-size: 22px; color: var(--brand); }
+  header .sub { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+  .summary {
+    background: var(--accent); border: 1px solid #f3d8a8;
+    border-radius: 10px; padding: 12px 14px; margin-bottom: 16px;
+  }
+  .summary .title {
+    font-weight: 700; color: var(--accent-ink); font-size: 14px; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px;
+  }
+  .summary .title small { font-weight: 400; color: var(--muted); font-size: 12px; }
+  table.avg { width: 100%; border-collapse: collapse; }
+  table.avg th, table.avg td {
+    border: 1px solid #f0dcb4; padding: 8px 6px; text-align: center; font-size: 13px;
+  }
+  table.avg th { background: #ffe9c7; color: var(--accent-ink); font-weight: 600; }
+  table.avg td.avg { background: #fffaf2; font-weight: 700; color: var(--accent-ink); }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    overflow: hidden; box-shadow: 0 1px 3px rgba(16,24,40,.06);
+  }
+  .scroll { max-height: 70vh; overflow: auto; }
+  table.grid { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.grid thead th {
+    position: sticky; top: 0; background: var(--brand); color: #fff;
+    padding: 10px 8px; text-align: center; font-weight: 600; z-index: 2;
+  }
+  table.grid tbody td {
+    border-bottom: 1px solid var(--line); padding: 7px 8px; text-align: center;
+  }
+  table.grid tbody tr:nth-child(even) { background: #fafbfc; }
+  table.grid td.date { color: var(--muted); white-space: nowrap; }
+  table.grid td.empty { color: #cbd2da; }
+  footer { color: var(--muted); font-size: 12px; margin-top: 14px; line-height: 1.6; }
+  footer code { background: #eef1f5; padding: 1px 5px; border-radius: 4px; }
+  .toolbar { display: flex; gap: 12px; align-items: center; margin: 6px 0 18px; flex-wrap: wrap; }
+  .btn {
+    background: var(--brand); color: #fff; border: none; border-radius: 8px;
+    padding: 9px 18px; font-size: 13px; font-weight: 700; cursor: pointer;
+  }
+  .btn:hover { background: var(--brand2); }
+  .toolbar .hint { color: var(--muted); font-size: 12px; }
+  .chart-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(16,24,40,.06); }
+  .chart-card h2 { margin: 0 0 12px; font-size: 15px; color: var(--brand); }
+</style>
+<script src="vendor/xlsx.full.min.js"></script>
+<script src="vendor/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>每日燃油附加费率表</h1>
+    <div class="sub">数据范围 2026/05/18 至 2026/08/13 ｜ 生成时间 2026-08-13 16:15 ｜ 来源：UPS / DHL / FedEx / Aramex 官网</div>
+    <div class="toolbar">
+      <button class="btn" onclick="exportXlsx()">⬇ 导出 XLSX</button>
+      <span class="hint">导出当前页面全部数据（含近三个月月均值 + 逐日费率），保存为 <code>每日燃油费率表.xlsx</code></span>
+    </div>
+  </header>
+
+  <div class="summary">
+    <div class="title">
+      <span>各渠道燃油费率 · 最近三个月月均值</span>
+      <small>近三个月：2026年6月 ～ 2026年8月（按每月每日生效费率平均）</small>
+    </div>
+    <table class="avg">
+      <thead><tr><th>月份</th><th>中国UPS</th><th>中国DHL</th><th>中国FEDEX</th><th>孟加拉aramex</th><th>孟加拉UPS</th><th>美国LA UPS</th><th>万邑通组合渠道</th></tr></thead>
+      <tbody>
+<tr><td class="avg">2026年6月</td><td class="avg">44.50%</td><td class="avg">—</td><td class="avg">43.69%</td><td class="avg">43.00%</td><td class="avg">46.75%</td><td class="avg">26.61%</td><td class="avg">4.28%</td></tr>
+<tr><td class="avg">2026年7月</td><td class="avg">40.36%</td><td class="avg">38.60%</td><td class="avg">39.61%</td><td class="avg">37.50%</td><td class="avg">37.31%</td><td class="avg">25.28%</td><td class="avg">4.14%</td></tr>
+<tr><td class="avg">2026年8月（截至08/13）</td><td class="avg">46.17%</td><td class="avg">38.94%</td><td class="avg">45.42%</td><td class="avg">34.50%</td><td class="avg">41.63%</td><td class="avg">26.75%</td><td class="avg">4.54%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="chart-card">
+    <h2>各渠道燃油费率波动趋势</h2>
+    <div style="position:relative; height:360px;">
+      <canvas id="trendChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="scroll">
+      <table class="grid">
+        <thead><tr><th>日期</th><th>中国UPS</th><th>中国DHL</th><th>中国FEDEX</th><th>孟加拉aramex</th><th>孟加拉UPS</th><th>美国LA UPS</th><th>万邑通组合渠道</th></tr></thead>
+        <tbody>
+<tr><td class="date">2026/05/18</td><td>49.50%</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td>27.75%</td><td>5.20%</td></tr>
+<tr><td class="date">2026/05/19</td><td>49.50%</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td>27.75%</td><td>5.20%</td></tr>
+<tr><td class="date">2026/05/20</td><td>49.50%</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td>27.75%</td><td>5.20%</td></tr>
+<tr><td class="date">2026/05/21</td><td>49.50%</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td>27.75%</td><td>5.20%</td></tr>
+<tr><td class="date">2026/05/22</td><td>49.50%</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td>27.75%</td><td>5.20%</td></tr>
+<tr><td class="date">2026/05/23</td><td>49.50%</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td>27.75%</td><td>5.20%</td></tr>
+<tr><td class="date">2026/05/24</td><td>49.50%</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td>27.75%</td><td>5.20%</td></tr>
+<tr><td class="date">2026/05/25</td><td>50.25%</td><td class="empty">—</td><td>49.50%</td><td class="empty">—</td><td class="empty">—</td><td>27.50%</td><td>5.00%</td></tr>
+<tr><td class="date">2026/05/26</td><td>50.25%</td><td class="empty">—</td><td>49.50%</td><td class="empty">—</td><td class="empty">—</td><td>27.50%</td><td>5.00%</td></tr>
+<tr><td class="date">2026/05/27</td><td>50.25%</td><td class="empty">—</td><td>49.50%</td><td class="empty">—</td><td class="empty">—</td><td>27.50%</td><td>5.00%</td></tr>
+<tr><td class="date">2026/05/28</td><td>50.25%</td><td class="empty">—</td><td>49.50%</td><td class="empty">—</td><td class="empty">—</td><td>27.50%</td><td>5.00%</td></tr>
+<tr><td class="date">2026/05/29</td><td>50.25%</td><td class="empty">—</td><td>49.50%</td><td class="empty">—</td><td class="empty">—</td><td>27.50%</td><td>5.00%</td></tr>
+<tr><td class="date">2026/05/30</td><td>50.25%</td><td class="empty">—</td><td>49.50%</td><td class="empty">—</td><td class="empty">—</td><td>27.50%</td><td>5.00%</td></tr>
+<tr><td class="date">2026/05/31</td><td>50.25%</td><td class="empty">—</td><td>49.50%</td><td class="empty">—</td><td class="empty">—</td><td>27.50%</td><td>5.00%</td></tr>
+<tr><td class="date">2026/06/01</td><td>50.25%</td><td class="empty">—</td><td>49.25%</td><td>44.50%</td><td>46.75%</td><td>27.25%</td><td>4.80%</td></tr>
+<tr><td class="date">2026/06/02</td><td>50.25%</td><td class="empty">—</td><td>49.25%</td><td>44.50%</td><td>46.75%</td><td>27.25%</td><td>4.80%</td></tr>
+<tr><td class="date">2026/06/03</td><td>50.25%</td><td class="empty">—</td><td>49.25%</td><td>44.50%</td><td>46.75%</td><td>27.25%</td><td>4.80%</td></tr>
+<tr><td class="date">2026/06/04</td><td>50.25%</td><td class="empty">—</td><td>49.25%</td><td>44.50%</td><td>46.75%</td><td>27.25%</td><td>4.80%</td></tr>
+<tr><td class="date">2026/06/05</td><td>50.25%</td><td class="empty">—</td><td>49.25%</td><td>44.50%</td><td>46.75%</td><td>27.25%</td><td>4.80%</td></tr>
+<tr><td class="date">2026/06/06</td><td>50.25%</td><td class="empty">—</td><td>49.25%</td><td>44.50%</td><td>46.75%</td><td>27.25%</td><td>4.80%</td></tr>
+<tr><td class="date">2026/06/07</td><td>50.25%</td><td class="empty">—</td><td>49.25%</td><td>44.50%</td><td>46.75%</td><td>27.25%</td><td>4.80%</td></tr>
+<tr><td class="date">2026/06/08</td><td>43.25%</td><td class="empty">—</td><td>42.50%</td><td>44.50%</td><td>46.75%</td><td>27.00%</td><td>4.40%</td></tr>
+<tr><td class="date">2026/06/09</td><td>43.25%</td><td class="empty">—</td><td>42.50%</td><td>44.50%</td><td>46.75%</td><td>27.00%</td><td>4.40%</td></tr>
+<tr><td class="date">2026/06/10</td><td>43.25%</td><td class="empty">—</td><td>42.50%</td><td>44.50%</td><td>46.75%</td><td>27.00%</td><td>4.40%</td></tr>
+<tr><td class="date">2026/06/11</td><td>43.25%</td><td class="empty">—</td><td>42.50%</td><td>44.50%</td><td>46.75%</td><td>27.00%</td><td>4.40%</td></tr>
+<tr><td class="date">2026/06/12</td><td>43.25%</td><td class="empty">—</td><td>42.50%</td><td>44.50%</td><td>46.75%</td><td>27.00%</td><td>4.40%</td></tr>
+<tr><td class="date">2026/06/13</td><td>43.25%</td><td class="empty">—</td><td>42.50%</td><td>44.50%</td><td>46.75%</td><td>27.00%</td><td>4.40%</td></tr>
+<tr><td class="date">2026/06/14</td><td>43.25%</td><td class="empty">—</td><td>42.50%</td><td>44.50%</td><td>46.75%</td><td>27.00%</td><td>4.40%</td></tr>
+<tr><td class="date">2026/06/15</td><td>43.75%</td><td class="empty">—</td><td>43.00%</td><td>44.50%</td><td>46.75%</td><td>26.50%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/06/16</td><td>43.75%</td><td class="empty">—</td><td>43.00%</td><td>41.50%</td><td>46.75%</td><td>26.50%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/06/17</td><td>43.75%</td><td class="empty">—</td><td>43.00%</td><td>41.50%</td><td>46.75%</td><td>26.50%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/06/18</td><td>43.75%</td><td class="empty">—</td><td>43.00%</td><td>41.50%</td><td>46.75%</td><td>26.50%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/06/19</td><td>43.75%</td><td class="empty">—</td><td>43.00%</td><td>41.50%</td><td>46.75%</td><td>26.50%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/06/20</td><td>43.75%</td><td class="empty">—</td><td>43.00%</td><td>41.50%</td><td>46.75%</td><td>26.50%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/06/21</td><td>43.75%</td><td class="empty">—</td><td>43.00%</td><td>41.50%</td><td>46.75%</td><td>26.50%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/06/22</td><td>42.25%</td><td class="empty">—</td><td>41.50%</td><td>41.50%</td><td>46.75%</td><td>26.00%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/06/23</td><td>42.25%</td><td class="empty">—</td><td>41.50%</td><td>41.50%</td><td>46.75%</td><td>26.00%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/06/24</td><td>42.25%</td><td class="empty">—</td><td>41.50%</td><td>41.50%</td><td>46.75%</td><td>26.00%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/06/25</td><td>42.25%</td><td class="empty">—</td><td>41.50%</td><td>41.50%</td><td>46.75%</td><td>26.00%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/06/26</td><td>42.25%</td><td class="empty">—</td><td>41.50%</td><td>41.50%</td><td>46.75%</td><td>26.00%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/06/27</td><td>42.25%</td><td class="empty">—</td><td>41.50%</td><td>41.50%</td><td>46.75%</td><td>26.00%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/06/28</td><td>42.25%</td><td class="empty">—</td><td>41.50%</td><td>41.50%</td><td>46.75%</td><td>26.00%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/06/29</td><td>39.25%</td><td class="empty">—</td><td>38.50%</td><td>41.50%</td><td>46.75%</td><td>25.50%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/06/30</td><td>39.25%</td><td class="empty">—</td><td>38.50%</td><td>41.50%</td><td>46.75%</td><td>25.50%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/01</td><td>39.25%</td><td class="empty">—</td><td>38.50%</td><td>37.50%</td><td>46.75%</td><td>25.50%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/02</td><td>39.25%</td><td class="empty">—</td><td>38.50%</td><td>37.50%</td><td>46.75%</td><td>25.50%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/03</td><td>39.25%</td><td class="empty">—</td><td>38.50%</td><td>37.50%</td><td>46.75%</td><td>25.50%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/04</td><td>39.25%</td><td class="empty">—</td><td>38.50%</td><td>37.50%</td><td>46.75%</td><td>25.50%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/05</td><td>39.25%</td><td class="empty">—</td><td>38.50%</td><td>37.50%</td><td>46.75%</td><td>25.50%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/06</td><td>39.00%</td><td class="empty">—</td><td>38.25%</td><td>37.50%</td><td>35.50%</td><td>25.00%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/07</td><td>39.00%</td><td class="empty">—</td><td>38.25%</td><td>37.50%</td><td>35.50%</td><td>25.00%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/08</td><td>39.00%</td><td class="empty">—</td><td>38.25%</td><td>37.50%</td><td>35.50%</td><td>25.00%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/09</td><td>39.00%</td><td class="empty">—</td><td>38.25%</td><td>37.50%</td><td>35.50%</td><td>25.00%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/10</td><td>39.00%</td><td class="empty">—</td><td>38.25%</td><td>37.50%</td><td>35.50%</td><td>25.00%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/11</td><td>39.00%</td><td class="empty">—</td><td>38.25%</td><td>37.50%</td><td>35.50%</td><td>25.00%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/12</td><td>39.00%</td><td class="empty">—</td><td>38.25%</td><td>37.50%</td><td>35.50%</td><td>25.00%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/13</td><td>39.25%</td><td class="empty">—</td><td>38.50%</td><td>37.50%</td><td>35.50%</td><td>24.75%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/14</td><td>39.25%</td><td class="empty">—</td><td>38.50%</td><td>37.50%</td><td>35.50%</td><td>24.75%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/15</td><td>39.25%</td><td class="empty">—</td><td>38.50%</td><td>37.50%</td><td>35.50%</td><td>24.75%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/16</td><td>39.25%</td><td class="empty">—</td><td>38.50%</td><td>37.50%</td><td>35.50%</td><td>24.75%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/17</td><td>39.25%</td><td class="empty">—</td><td>38.50%</td><td>37.50%</td><td>35.50%</td><td>24.75%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/18</td><td>39.25%</td><td class="empty">—</td><td>38.50%</td><td>37.50%</td><td>35.50%</td><td>24.75%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/19</td><td>39.25%</td><td class="empty">—</td><td>38.50%</td><td>37.50%</td><td>35.50%</td><td>24.75%</td><td>4.00%</td></tr>
+<tr><td class="date">2026/07/20</td><td>40.50%</td><td>38.50%</td><td>39.75%</td><td>37.50%</td><td>35.50%</td><td>25.25%</td><td>4.20%</td></tr>
+<tr><td class="date">2026/07/21</td><td>40.50%</td><td>38.50%</td><td>39.75%</td><td>37.50%</td><td>35.50%</td><td>25.25%</td><td>4.20%</td></tr>
+<tr><td class="date">2026/07/22</td><td>40.50%</td><td>38.50%</td><td>39.75%</td><td>37.50%</td><td>35.50%</td><td>25.25%</td><td>4.20%</td></tr>
+<tr><td class="date">2026/07/23</td><td>40.50%</td><td>38.50%</td><td>39.75%</td><td>37.50%</td><td>35.50%</td><td>25.25%</td><td>4.20%</td></tr>
+<tr><td class="date">2026/07/24</td><td>40.50%</td><td>38.50%</td><td>39.75%</td><td>37.50%</td><td>35.50%</td><td>25.25%</td><td>4.20%</td></tr>
+<tr><td class="date">2026/07/25</td><td>40.50%</td><td>38.50%</td><td>39.75%</td><td>37.50%</td><td>35.50%</td><td>25.25%</td><td>4.20%</td></tr>
+<tr><td class="date">2026/07/26</td><td>40.50%</td><td>38.50%</td><td>39.75%</td><td>37.50%</td><td>35.50%</td><td>25.25%</td><td>4.20%</td></tr>
+<tr><td class="date">2026/07/27</td><td>44.75%</td><td>38.75%</td><td>44.00%</td><td>37.50%</td><td>35.50%</td><td>26.25%</td><td>4.60%</td></tr>
+<tr><td class="date">2026/07/28</td><td>44.75%</td><td>38.75%</td><td>44.00%</td><td>37.50%</td><td>35.50%</td><td>26.25%</td><td>4.60%</td></tr>
+<tr><td class="date">2026/07/29</td><td>44.75%</td><td>38.75%</td><td>44.00%</td><td>37.50%</td><td>35.50%</td><td>26.25%</td><td>4.60%</td></tr>
+<tr><td class="date">2026/07/30</td><td>44.75%</td><td>38.75%</td><td>44.00%</td><td>37.50%</td><td>35.50%</td><td>26.25%</td><td>4.60%</td></tr>
+<tr><td class="date">2026/07/31</td><td>44.75%</td><td>38.75%</td><td>44.00%</td><td>37.50%</td><td>35.50%</td><td>26.25%</td><td>4.60%</td></tr>
+<tr><td class="date">2026/08/01</td><td>44.75%</td><td>38.75%</td><td>44.00%</td><td>34.50%</td><td>35.50%</td><td>26.25%</td><td>4.60%</td></tr>
+<tr><td class="date">2026/08/02</td><td>44.75%</td><td>38.75%</td><td>44.00%</td><td>34.50%</td><td>35.50%</td><td>26.25%</td><td>4.60%</td></tr>
+<tr><td class="date">2026/08/03</td><td>46.25%</td><td>38.25%</td><td>45.50%</td><td>34.50%</td><td>42.75%</td><td>26.75%</td><td>4.60%</td></tr>
+<tr><td class="date">2026/08/04</td><td>46.25%</td><td>38.25%</td><td>45.50%</td><td>34.50%</td><td>42.75%</td><td>26.75%</td><td>4.60%</td></tr>
+<tr><td class="date">2026/08/05</td><td>46.25%</td><td>38.25%</td><td>45.50%</td><td>34.50%</td><td>42.75%</td><td>26.75%</td><td>4.60%</td></tr>
+<tr><td class="date">2026/08/06</td><td>46.25%</td><td>38.25%</td><td>45.50%</td><td>34.50%</td><td>42.75%</td><td>26.75%</td><td>4.60%</td></tr>
+<tr><td class="date">2026/08/07</td><td>46.25%</td><td>38.25%</td><td>45.50%</td><td>34.50%</td><td>42.75%</td><td>26.75%</td><td>4.60%</td></tr>
+<tr><td class="date">2026/08/08</td><td>46.25%</td><td>38.25%</td><td>45.50%</td><td>34.50%</td><td>42.75%</td><td>26.75%</td><td>4.60%</td></tr>
+<tr><td class="date">2026/08/09</td><td>46.25%</td><td>38.25%</td><td>45.50%</td><td>34.50%</td><td>42.75%</td><td>26.75%</td><td>4.60%</td></tr>
+<tr><td class="date">2026/08/10</td><td>46.75%</td><td>40.25%</td><td>46.00%</td><td>34.50%</td><td>42.75%</td><td>27.00%</td><td>4.40%</td></tr>
+<tr><td class="date">2026/08/11</td><td>46.75%</td><td>40.25%</td><td>46.00%</td><td>34.50%</td><td>42.75%</td><td>27.00%</td><td>4.40%</td></tr>
+<tr><td class="date">2026/08/12</td><td>46.75%</td><td>40.25%</td><td>46.00%</td><td>34.50%</td><td>42.75%</td><td>27.00%</td><td>4.40%</td></tr>
+<tr><td class="date">2026/08/13</td><td>46.75%</td><td>40.25%</td><td>46.00%</td><td>34.50%</td><td>42.75%</td><td>27.00%</td><td>4.40%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    说明：表格按各官网公布的生效日期逐日向前填充；「—」表示该渠道在当日尚无公开费率数据（如 DHL、Aramex 历史覆盖较短）。<br>
+    美国 LA UPS 口径：美国国内陆运（Ground）。万邑通组合渠道费率基于 EIA 美国公路柴油周平均零售价格，按用户给定区间映射，每周随 EIA 数据更新。<br>
+    如需调整口径或时间范围，请联系维护方重新生成。
+  </footer>
+
+  <script>
+function cellVal(td) {
+  var t = td.textContent.trim();
+  if (t === '—' || t === '') return '';
+  if (/%$/.test(t)) return parseFloat(t) / 100;   // "44.50%" -> 0.445
+  return t;                                          // 日期/标签保持字符串
+}
+function exportXlsx() {
+  var rows = [];
+  // 1) 近三个月月均值块
+  rows.push(['各渠道燃油费率 · 最近三个月月均值']);
+  var avg = document.querySelector('table.avg');
+  rows.push(Array.prototype.map.call(avg.querySelectorAll('thead th'), function (th) { return th.textContent.trim(); }));
+  Array.prototype.forEach.call(avg.querySelectorAll('tbody tr'), function (tr) {
+    rows.push(Array.prototype.map.call(tr.querySelectorAll('td'), cellVal));
+  });
+  rows.push([]); // 空行分隔
+  // 2) 逐日数据块
+  var grid = document.querySelector('table.grid');
+  rows.push(Array.prototype.map.call(grid.querySelectorAll('thead th'), function (th) { return th.textContent.trim(); }));
+  Array.prototype.forEach.call(grid.querySelectorAll('tbody tr'), function (tr) {
+    rows.push(Array.prototype.map.call(tr.querySelectorAll('td'), cellVal));
+  });
+  var ws = XLSX.utils.aoa_to_sheet(rows);
+  // 百分比列设为 0.00% 显示（第1列 A 为标签/日期，跳过）
+  var range = XLSX.utils.decode_range(ws['!ref']);
+  for (var R = range.s.r; R <= range.e.r; R++) {
+    for (var C = range.s.c; C <= range.e.c; C++) {
+      if (C === 0) continue;
+      var ref = XLSX.utils.encode_cell({ r: R, c: C });
+      var cell = ws[ref];
+      if (cell && typeof cell.v === 'number') cell.z = '0.00%';
+    }
+  }
+  ws['!cols'] = [{ wch: 18 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 14 }, { wch: 12 }, { wch: 14 }, { wch: 16 }];
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '每日燃油费率');
+  XLSX.writeFile(wb, '每日燃油费率表.xlsx');
+}
+</script>
+  <script>const CHART_DATA = {"labels": ["2026/05/18", "2026/05/19", "2026/05/20", "2026/05/21", "2026/05/22", "2026/05/23", "2026/05/24", "2026/05/25", "2026/05/26", "2026/05/27", "2026/05/28", "2026/05/29", "2026/05/30", "2026/05/31", "2026/06/01", "2026/06/02", "2026/06/03", "2026/06/04", "2026/06/05", "2026/06/06", "2026/06/07", "2026/06/08", "2026/06/09", "2026/06/10", "2026/06/11", "2026/06/12", "2026/06/13", "2026/06/14", "2026/06/15", "2026/06/16", "2026/06/17", "2026/06/18", "2026/06/19", "2026/06/20", "2026/06/21", "2026/06/22", "2026/06/23", "2026/06/24", "2026/06/25", "2026/06/26", "2026/06/27", "2026/06/28", "2026/06/29", "2026/06/30", "2026/07/01", "2026/07/02", "2026/07/03", "2026/07/04", "2026/07/05", "2026/07/06", "2026/07/07", "2026/07/08", "2026/07/09", "2026/07/10", "2026/07/11", "2026/07/12", "2026/07/13", "2026/07/14", "2026/07/15", "2026/07/16", "2026/07/17", "2026/07/18", "2026/07/19", "2026/07/20", "2026/07/21", "2026/07/22", "2026/07/23", "2026/07/24", "2026/07/25", "2026/07/26", "2026/07/27", "2026/07/28", "2026/07/29", "2026/07/30", "2026/07/31", "2026/08/01", "2026/08/02", "2026/08/03", "2026/08/04", "2026/08/05", "2026/08/06", "2026/08/07", "2026/08/08", "2026/08/09", "2026/08/10", "2026/08/11", "2026/08/12", "2026/08/13"], "datasets": [{"label": "中国UPS", "data": [49.5, 49.5, 49.5, 49.5, 49.5, 49.5, 49.5, 50.25, 50.25, 50.25, 50.25, 50.25, 50.25, 50.25, 50.25, 50.25, 50.25, 50.25, 50.25, 50.25, 50.25, 43.25, 43.25, 43.25, 43.25, 43.25, 43.25, 43.25, 43.75, 43.75, 43.75, 43.75, 43.75, 43.75, 43.75, 42.25, 42.25, 42.25, 42.25, 42.25, 42.25, 42.25, 39.25, 39.25, 39.25, 39.25, 39.25, 39.25, 39.25, 39.0, 39.0, 39.0, 39.0, 39.0, 39.0, 39.0, 39.25, 39.25, 39.25, 39.25, 39.25, 39.25, 39.25, 40.5, 40.5, 40.5, 40.5, 40.5, 40.5, 40.5, 44.75, 44.75, 44.75, 44.75, 44.75, 44.75, 44.75, 46.25, 46.25, 46.25, 46.25, 46.25, 46.25, 46.25, 46.75, 46.75, 46.75, 46.75], "color": "#1f4e78"}, {"label": "中国DHL", "data": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 38.5, 38.5, 38.5, 38.5, 38.5, 38.5, 38.5, 38.75, 38.75, 38.75, 38.75, 38.75, 38.75, 38.75, 38.25, 38.25, 38.25, 38.25, 38.25, 38.25, 38.25, 40.25, 40.25, 40.25, 40.25], "color": "#e8590c"}, {"label": "中国FEDEX", "data": [null, null, null, null, null, null, null, 49.5, 49.5, 49.5, 49.5, 49.5, 49.5, 49.5, 49.25, 49.25, 49.25, 49.25, 49.25, 49.25, 49.25, 42.5, 42.5, 42.5, 42.5, 42.5, 42.5, 42.5, 43.0, 43.0, 43.0, 43.0, 43.0, 43.0, 43.0, 41.5, 41.5, 41.5, 41.5, 41.5, 41.5, 41.5, 38.5, 38.5, 38.5, 38.5, 38.5, 38.5, 38.5, 38.25, 38.25, 38.25, 38.25, 38.25, 38.25, 38.25, 38.5, 38.5, 38.5, 38.5, 38.5, 38.5, 38.5, 39.75, 39.75, 39.75, 39.75, 39.75, 39.75, 39.75, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 45.5, 45.5, 45.5, 45.5, 45.5, 45.5, 45.5, 46.0, 46.0, 46.0, 46.0], "color": "#2f9e44"}, {"label": "孟加拉aramex", "data": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, 44.5, 44.5, 44.5, 44.5, 44.5, 44.5, 44.5, 44.5, 44.5, 44.5, 44.5, 44.5, 44.5, 44.5, 44.5, 41.5, 41.5, 41.5, 41.5, 41.5, 41.5, 41.5, 41.5, 41.5, 41.5, 41.5, 41.5, 41.5, 41.5, 41.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 37.5, 34.5, 34.5, 34.5, 34.5, 34.5, 34.5, 34.5, 34.5, 34.5, 34.5, 34.5, 34.5, 34.5], "color": "#9c36b5"}, {"label": "孟加拉UPS", "data": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 46.75, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 35.5, 42.75, 42.75, 42.75, 42.75, 42.75, 42.75, 42.75, 42.75, 42.75, 42.75, 42.75], "color": "#c92a2a"}, {"label": "美国LA UPS", "data": [27.75, 27.75, 27.75, 27.75, 27.75, 27.75, 27.75, 27.5, 27.5, 27.5, 27.5, 27.5, 27.5, 27.5, 27.25, 27.25, 27.25, 27.25, 27.25, 27.25, 27.25, 27.0, 27.0, 27.0, 27.0, 27.0, 27.0, 27.0, 26.5, 26.5, 26.5, 26.5, 26.5, 26.5, 26.5, 26.0, 26.0, 26.0, 26.0, 26.0, 26.0, 26.0, 25.5, 25.5, 25.5, 25.5, 25.5, 25.5, 25.5, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 24.75, 24.75, 24.75, 24.75, 24.75, 24.75, 24.75, 25.25, 25.25, 25.25, 25.25, 25.25, 25.25, 25.25, 26.25, 26.25, 26.25, 26.25, 26.25, 26.25, 26.25, 26.75, 26.75, 26.75, 26.75, 26.75, 26.75, 26.75, 27.0, 27.0, 27.0, 27.0], "color": "#0c8599"}, {"label": "万邑通组合渠道", "data": [5.2, 5.2, 5.2, 5.2, 5.2, 5.2, 5.2, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 4.8, 4.8, 4.8, 4.8, 4.8, 4.8, 4.8, 4.4, 4.4, 4.4, 4.4, 4.4, 4.4, 4.4, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.2, 4.2, 4.2, 4.2, 4.2, 4.2, 4.2, 4.6, 4.6, 4.6, 4.6, 4.6, 4.6, 4.6, 4.6, 4.6, 4.6, 4.6, 4.6, 4.6, 4.6, 4.4, 4.4, 4.4, 4.4], "color": "#f08c00"}]};</script>
+  <script>
+(function () {
+  var el = document.getElementById('trendChart');
+  if (!el || typeof Chart === 'undefined') return;
+  var d = CHART_DATA;
+  new Chart(el.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: d.labels,
+      datasets: d.datasets.map(function (s) {
+        return {
+          label: s.label, data: s.data, borderColor: s.color,
+          backgroundColor: s.color, borderWidth: 2, pointRadius: 0,
+          pointHoverRadius: 4, spanGaps: false, tension: 0.25
+        };
+      })
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'top', labels: { boxWidth: 14, font: { size: 12 } } },
+        tooltip: { callbacks: { label: function (c) {
+          return c.dataset.label + ': ' + (c.parsed.y == null ? '无数据' : c.parsed.y.toFixed(2) + '%');
+        } } }
+      },
+      scales: {
+        x: { ticks: { maxTicksLimit: 12, autoSkip: true, font: { size: 11 } }, title: { display: true, text: '日期' } },
+        y: { title: { display: true, text: '燃油附加费率 (%)' }, ticks: { callback: function (v) { return v + '%'; } } }
+      }
+    }
+  });
+})();
+</script>
+</div>
+</body>
+</html>
