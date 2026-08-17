@@ -62,6 +62,16 @@
   .toolbar .hint { color: var(--muted); font-size: 12px; }
   .chart-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(16,24,40,.06); }
   .chart-card h2 { margin: 0 0 12px; font-size: 15px; color: var(--brand); }
+  .sources { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-top: 16px; box-shadow: 0 1px 3px rgba(16,24,40,.06); }
+  .sources-title { font-weight: 700; color: var(--brand); font-size: 14px; margin-bottom: 10px; }
+  table.src-table { width: 100%; border-collapse: collapse; }
+  table.src-table td { border-bottom: 1px solid var(--line); padding: 7px 8px; font-size: 13px; vertical-align: top; }
+  table.src-table tr:last-child td { border-bottom: none; }
+  table.src-table td.src-name { width: 170px; color: var(--ink); font-weight: 600; white-space: nowrap; }
+  table.src-table td.src-url { color: var(--brand2); word-break: break-all; }
+  table.src-table a { color: var(--brand2); text-decoration: none; }
+  table.src-table a:hover { text-decoration: underline; }
+  .updated-badge { display: inline-block; background: #e6f4ea; color: #1f7a3d; border: 1px solid #b7e0c2; border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 600; }
 </style>
 <script src="vendor/xlsx.full.min.js"></script>
 <script src="vendor/chart.umd.min.js"></script>
@@ -70,7 +80,7 @@
 <div class="wrap">
   <header>
     <h1>每日燃油附加费率表</h1>
-    <div class="sub">数据范围 2026/05/18 至 2026/08/17 ｜ 生成时间 2026-08-17 09:33 ｜ 来源：UPS / DHL / FedEx / Aramex 官网</div>
+    <div class="sub">数据范围 2026/05/18 至 2026/08/17 ｜ 数据更新于 2026/08/17 ｜ 生成时间 2026-08-17 09:53 <span class="updated-badge">每日 9:10 自动更新</span></div>
     <div class="toolbar">
       <button class="btn" onclick="exportXlsx()">⬇ 导出 XLSX</button>
       <span class="hint">导出当前页面全部数据（含近三个月月均值 + 逐日费率），保存为 <code>每日燃油费率表.xlsx</code></span>
@@ -199,6 +209,21 @@
         </tbody>
       </table>
     </div>
+  </div>
+
+<div class="sources">
+    <div class="sources-title">各渠道燃油费率官方来源</div>
+    <table class="src-table">
+      <tbody>
+<tr><td class="src-name">中国UPS燃油网址</td><td class="src-url"><a href="https://www.ups.com/cn/zh/support/shipping-support/shipping-costs-rates/fuel-surcharges" target="_blank" rel="noopener">https://www.ups.com/cn/zh/support/shipping-support/shipping-costs-rates/fuel-surcharges</a></td></tr>
+<tr><td class="src-name">中国DHL燃油网址</td><td class="src-url"><a href="https://mydhlplus.dhl.com/cn/zh/ship/surcharges.html#/fuel_surcharge" target="_blank" rel="noopener">https://mydhlplus.dhl.com/cn/zh/ship/surcharges.html#/fuel_surcharge</a></td></tr>
+<tr><td class="src-name">中国FEDEX燃油网址</td><td class="src-url"><a href="https://www.fedex.com/zh-cn/shipping/surcharges.html" target="_blank" rel="noopener">https://www.fedex.com/zh-cn/shipping/surcharges.html</a></td></tr>
+<tr><td class="src-name">孟加拉aramex燃油网址</td><td class="src-url"><a href="https://www.aramex.com/bd/en/services-solutions/fuel-surcharge" target="_blank" rel="noopener">https://www.aramex.com/bd/en/services-solutions/fuel-surcharge</a></td></tr>
+<tr><td class="src-name">孟加拉UPS燃油网址</td><td class="src-url"><a href="https://www.ups.com/bd/en/support/shipping-support/shipping-costs-rates/fuel-surcharges" target="_blank" rel="noopener">https://www.ups.com/bd/en/support/shipping-support/shipping-costs-rates/fuel-surcharges</a></td></tr>
+<tr><td class="src-name">美国LA UPS燃油网址</td><td class="src-url"><a href="https://www.ups.com/us/en/support/shipping-support/shipping-costs-rates/fuel-surcharges" target="_blank" rel="noopener">https://www.ups.com/us/en/support/shipping-support/shipping-costs-rates/fuel-surcharges</a></td></tr>
+<tr><td class="src-name">万邑通燃油费率</td><td class="src-url"><a href="https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=EMD_EPD2D_PTE_NUS_DPG&f=W" target="_blank" rel="noopener">https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=EMD_EPD2D_PTE_NUS_DPG&f=W</a></td></tr>
+      </tbody>
+    </table>
   </div>
 
   <footer>
